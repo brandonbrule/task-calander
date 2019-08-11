@@ -1,0 +1,54 @@
+
+<style>
+td{ border: 1px solid black; }
+
+span[data-type="total-hours"]{
+	width: 25px;
+	height: 25px;
+	float: right;
+	background: black;
+	text-align: center;
+	font-size: 14px;
+	color:#fff;
+	padding: 2px;
+}
+
+td[data-hours="8"]{
+	background: green;
+}
+
+.task-container{
+	clear:both;
+}
+
+
+#month-browser-container{
+	position: absolute;
+	right: 10px;
+	width: 400px;
+}
+
+#month-browser-container button{
+	width: 133px;
+	padding: 10px;
+	font-size: 12px;
+}
+
+
+</style>
+
+<body>
+<script src='https://brandonbrule.github.io/itsa/js/itsa.js'></script>
+
+
+<button onclick="its.a(user_data)">Show Data</button>
+<button onclick="its.a(JSON.parse(localStorage.getItem('user_data')))">Show LocalStorage</button>
+<button onclick="localStorage.removeItem('user_data')">Remove LocalStorage</button>
+
+<div data-year="2019" id="month-browser-container"></div>
+
+<table id="calander"></table>
+
+<script src="script.js"></script>
+</body>
+

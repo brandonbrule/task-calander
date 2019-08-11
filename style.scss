@@ -1,0 +1,9 @@
+table{ border:1px solid red; }
+td{ border: 1px solid black; }
+
+span[data-type="total-hours"]{
+  float: right;
+  background: black;
+  color:#fff;
+  padding: 2px;
+}
