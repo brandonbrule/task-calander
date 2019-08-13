@@ -13,8 +13,40 @@ span[data-type="total-hours"]{
 	padding: 2px;
 }
 
+td[data-hours]{
+	background: red;
+}
+
+td[data-hours="0"]{
+	background:#fff;
+}
+
+td[data-hours="1"],
+td[data-hours="2"],
+td[data-hours="3"],
+td[data-hours="4"],
+td[data-hours="5"],
+td[data-hours="6"],
+td[data-hours="7"]{
+	background: orange;
+}
 td[data-hours="8"]{
-	background: green;
+	background: green!important;
+}
+
+td[data-hours~="3"][data-val-lt~="100"] {
+  color: #f00;
+}
+
+td[data-dayofweek="6"] .task-container,
+td[data-dayofweek="0"] .task-container{
+	opacity: 0;
+}
+
+
+
+td.date-cell-today{
+	background: yellow;
 }
 
 .task-container{
