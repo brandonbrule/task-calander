@@ -126,7 +126,9 @@ var CalanderBuilder = (function() {
         html.push([
           '<div class="task-container">',
             '<label for="a">'+tasks[task].label+'</label>',
-            '<input type="number" data-task-id="'+task+'" min="0" max="8" step="1" value="' + tasks[task].hours + '">',
+            '<input type="range" data-task-id="'+task+'" min="0" max="8" step="0.5" value="' + tasks[task].hours + '">',
+            '<input type="text" data-task-id="'+task+'" disabled value="' + tasks[task].hours + '">',
+            '<input type="button" data-task-id="'+task+'" data-sethours="8" value="All Day">',
           '</div>'
         ].join(''))
       }
@@ -158,6 +160,12 @@ var CalanderBuilder = (function() {
       '<td data-date="'+ (day + 1) +'" data-month="'+ month +'" data-year="'+ year +'" data-hours="'+total_hours+'" data-dayofweek="'+day_of_week+'" class="'+today_class+'">', 
         '<span data-type="date">' + (day + 1) + '</span>',
         '<span data-type="total-hours" >' + total_hours + '</span>',
+
+        '<div class="shortcuts">',
+            '<input type="button" data-sethours="8" value="Personal">',
+            '<input type="button" data-sethours="8" value="Vacation">',
+            '<input type="button" data-sethours="8" value="Statuatory Holiday">',
+        '</div>',
         buildTasks(tasks),
       '</td>'
     ];
@@ -259,6 +267,77 @@ var totalHoursDays = function(tasks){
   return sum;
 };
 
+var resetToZero = function(tasks){
+
+  for(var task in tasks){
+    tasks[task]['hours'] = 0;
+  }
+
+};
+
+
+
+
+
+
+var updateHours = function(el){
+    var task = el;
+    var task_id = task.getAttribute('data-task-id');
+    var date_cell = task.parentNode.parentNode;
+    var date = date_cell.getAttribute('data-date');
+    var month = date_cell.getAttribute('data-month');
+    var year = date_cell.getAttribute('data-year');
+    var user_tasks = user_data[year][month][date]['tasks'];
+    
+    var total_hours_display = date_cell.querySelector('[data-type="total-hours"]');
+
+
+
+
+      if(el.getAttribute('type') === 'button' && el.hasAttribute('data-sethours')){
+
+        if(task_id !== null){
+          user_tasks[task_id]['hours'] = parseInt(el.getAttribute('data-sethours'));
+        } else {
+          // Must be total hours being set.
+          resetToZero(user_tasks);
+          total_hours_day = 8;
+        }
+      }
+
+
+      if(el.getAttribute('type') === 'range'){
+        user_tasks[task_id]['hours'] = parseFloat(task.value);
+      }
+
+      var task_controls = date_cell.querySelectorAll('[data-task-id="'+task_id+'"]');
+      [].forEach.call(task_controls, function( task ){
+        if(!task.hasAttribute('data-sethours')){
+          task.value = user_tasks[task_id]['hours'];
+        }
+      });
+
+
+      
+
+      if(task_id !== null){
+        total_hours_day = totalHoursDays(user_tasks);
+      }
+
+
+
+      
+      
+      user_data[year][month][date]['total_hours'] = total_hours_day;
+      
+      date_cell.setAttribute('data-hours', total_hours_day);
+
+      total_hours_display.innerHTML = total_hours_day;
+      
+      localStorage.setItem('user_data', JSON.stringify(user_data) );
+
+};
+
 
 
 
@@ -268,36 +347,8 @@ document.getElementsByTagName('body')[0].addEventListener('click', function(e){
   
   
   // IF Task Hours
-  if(e.target.nodeName === 'INPUT' && e.target.hasAttribute('data-task-id') ){
-    var task = e.target;
-    var task_id = task.getAttribute('data-task-id');
-    var date_cell = e.target.parentNode.parentNode;
-    var date = date_cell.getAttribute('data-date');
-    var month = date_cell.getAttribute('data-month');
-    var year = date_cell.getAttribute('data-year');
-    
-    var total_hours_display = date_cell.querySelector('[data-type="total-hours"]');
-    var total_hours_day = totalHoursDays(user_data[year][month][date]['tasks']);
-    var new_total = (parseFloat(task.value) + total_hours_day);
-
-
-    if( user_data[year][month][date]['tasks'][task_id]['hours'] <= 8){
-        
-      user_data[year][month][date]['tasks'][task_id]['hours'] = parseFloat(task.value);
-
-      total_hours_day = totalHoursDays(user_data[year][month][date]['tasks']);
-      
-      
-      user_data[year][month][date]['total_hours'] = total_hours_day;
-      
-      date_cell.setAttribute('data-hours', total_hours_day);
-      total_hours_display.innerHTML = total_hours_day;
-      
-      localStorage.setItem('user_data', JSON.stringify(user_data) );
-    } else {
-
-      task.value = user_data[year][month][date]['tasks'][task.getAttribute('data-task-id')]['hours'];
-    }
+  if(e.target.nodeName === 'INPUT'){
+    updateHours(e.target);
   }
   
 

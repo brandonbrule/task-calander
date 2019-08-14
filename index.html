@@ -27,7 +27,14 @@ td[data-hours="3"],
 td[data-hours="4"],
 td[data-hours="5"],
 td[data-hours="6"],
-td[data-hours="7"]{
+td[data-hours="7"],
+td[data-hours="1.5"],
+td[data-hours="2.5"],
+td[data-hours="3.5"],
+td[data-hours="4.5"],
+td[data-hours="5.5"],
+td[data-hours="6.5"],
+td[data-hours="7.5"]{
 	background: orange;
 }
 td[data-hours="8"]{
@@ -38,11 +45,17 @@ td[data-hours~="3"][data-val-lt~="100"] {
   color: #f00;
 }
 
-td[data-dayofweek="6"] .task-container,
+
 td[data-dayofweek="0"] .task-container{
 	opacity: 0;
 }
 
+td .task-container{
+	opacity: 0;
+}
+td:hover .task-container{
+	opacity: 1
+}
 
 
 td.date-cell-today{
@@ -51,6 +64,18 @@ td.date-cell-today{
 
 .task-container{
 	clear:both;
+}
+
+.task-container input[type="range"]{
+	width: 20%;
+}
+
+.task-container input[type="range"]{
+	width: 25%;
+}
+
+.task-container input[disabled]{
+	width: 15%;
 }
 
 
