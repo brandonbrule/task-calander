@@ -129,6 +129,7 @@ var CalanderBuilder = (function() {
             '<input type="range" data-task-id="'+task+'" min="0" max="8" step="0.5" value="' + tasks[task].hours + '">',
             '<input type="text" data-task-id="'+task+'" disabled value="' + tasks[task].hours + '">',
             '<input type="button" data-task-id="'+task+'" data-sethours="8" value="All Day">',
+            '<input type="button" data-task-id="'+task+'" data-sethours="4" value="Half Day">',
           '</div>'
         ].join(''))
       }
@@ -138,45 +139,46 @@ var CalanderBuilder = (function() {
   
   var buildDate = function(day, month, year) {
 
+    if(user_data[year][month][day + 1]){
+      var day_of_week = new Date( month + '' + (day + 1) + ', ' + year ).getDay();
 
-    var day_of_week = new Date( month + '' + (day + 1) + ', ' + year ).getDay();
+      var tasks = user_data[year][month][day + 1]['tasks'];
 
-    
-    var tasks = user_data[year][month][day + 1]['tasks'];
+      var total_hours;
+      if(user_data[year][month][day + 1]['total_hours']){
+        total_hours = user_data[year][month][day + 1]['total_hours'];
+      } else {
+        total_hours = 0;
+      }
+      
+      var today_class = '';
+      if(day + 1 === TODAY.getDate()){
+        today_class = 'date-cell-today';
+      }
 
-    var total_hours;
-    if(user_data[year][month][day + 1]['total_hours']){
-      total_hours = user_data[year][month][day + 1]['total_hours'];
-    } else {
-      total_hours = 0;
+      var html = [
+        '<td data-date="'+ (day + 1) +'" data-month="'+ month +'" data-year="'+ year +'" data-hours="'+total_hours+'" data-dayofweek="'+day_of_week+'" class="'+today_class+'">', 
+          '<span data-type="date">' + (day + 1) + '</span>',
+          '<span data-type="total-hours" >' + total_hours + '</span>',
+          '<div class="controller-group">',
+            '<div class="shortcuts">',
+                '<input type="button" data-sethours="8" value="Personal">',
+                '<input type="button" data-sethours="8" value="Vacation">',
+                '<input type="button" data-sethours="8" value="Statuatory Holiday">',
+            '</div>',
+            buildTasks(tasks),
+            '</div>',
+        '</td>'
+      ];
+      return html.join("");
     }
-    
-    var today_class = '';
-    if(day + 1 === TODAY.getDate()){
-      today_class = 'date-cell-today';
-    }
-
-    var html = [
-      '<td data-date="'+ (day + 1) +'" data-month="'+ month +'" data-year="'+ year +'" data-hours="'+total_hours+'" data-dayofweek="'+day_of_week+'" class="'+today_class+'">', 
-        '<span data-type="date">' + (day + 1) + '</span>',
-        '<span data-type="total-hours" >' + total_hours + '</span>',
-
-        '<div class="shortcuts">',
-            '<input type="button" data-sethours="8" value="Personal">',
-            '<input type="button" data-sethours="8" value="Vacation">',
-            '<input type="button" data-sethours="8" value="Statuatory Holiday">',
-        '</div>',
-        buildTasks(tasks),
-      '</td>'
-    ];
-    return html.join("");
   };
 
   var buildMonthTitle = function(month, year) {
     html = [
       '<thead>',
         "<tr>",
-          '<td colspan="7">' + months_config[month].key + " " + year + "</td>",
+          '<td colspan="7"><h2>' + months_config[month].key + " " + year + "</h2></td>",
         "</td>",
         "<tr>",
           "<td>Sunday</td>",
@@ -187,7 +189,7 @@ var CalanderBuilder = (function() {
           "<td>Friday</td>",
           "<td>Saturday</td>",
         "</tr>",
-      '<thead>'
+      '</thead>'
     ];
 
     return html.join("");
@@ -283,7 +285,7 @@ var resetToZero = function(tasks){
 var updateHours = function(el){
     var task = el;
     var task_id = task.getAttribute('data-task-id');
-    var date_cell = task.parentNode.parentNode;
+    var date_cell = task.parentNode.parentNode.parentNode;
     var date = date_cell.getAttribute('data-date');
     var month = date_cell.getAttribute('data-month');
     var year = date_cell.getAttribute('data-year');
